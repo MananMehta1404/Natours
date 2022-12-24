@@ -6,6 +6,10 @@ const app = express();
 // Including a middle-ware to get the client data available in the request object.
 app.use(express.json());
 
+// ******************************************* Basic Information ********************************************
+
+// Status Codes: 200 -> OK, 201 -> Created, 204 -> No Content, 404 -> Not Found
+
 // http get() method
 // app.get('/', (req, res) => {
     // res.status(200).send('Hello from the server side!');
@@ -21,8 +25,11 @@ app.use(express.json());
 // Reading the tours data synchronously.
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
 
-// Creating a get request for the tours data so that we can get the data of all the tours.
-app.get('/api/v1/tours', (req, res) => {
+
+// ******************************************** Handler Functions ********************************************* 
+
+// Function handling the get() request of all the tours.
+const getAllTours = (req, res) => {
     // We send the data in the Jsend data format of the JSON.
     res.status(200).json({
         status: 'success',
@@ -31,12 +38,10 @@ app.get('/api/v1/tours', (req, res) => {
             tours
         }
     });
-});
+}
 
-
-// Reading the parmaters specified in the url.
-// By specifying :id we are telling that this is a compulsory variable(parameter) and :y? means that this is a optional parameter. ('/api/v1/tours/:id/:x/:y?')
-app.get('/api/v1/tours/:id', (req, res) => {
+// Function handling the get() request to get a specific tour from all the tours.
+const getSpecificTour = (req, res) => {
     // To read the parameters
     console.log(req.params);
 
@@ -51,7 +56,7 @@ app.get('/api/v1/tours/:id', (req, res) => {
         return res.status(404).json({
             status: "fail",
             message: 'Invalid ID'
-        })
+        });
     }
 
     res.status(200).json({
@@ -60,11 +65,10 @@ app.get('/api/v1/tours/:id', (req, res) => {
             tour
         }
     });
-});
+}
 
-
-// Creating a post request for the tours so that we can add a new data to the tours.
-app.post('/api/v1/tours', (req, res) => {
+// Function handling the post() request to create a new tour in the tours data.
+const createTour = (req, res) => {
     // console.log(req.body);
 
     const newId = tours[tours.length - 1].id + 1;
@@ -85,8 +89,72 @@ app.post('/api/v1/tours', (req, res) => {
 
     // We cannot send two responses at the same time.
     // res.send('Done');
-});
+}
 
+// Function handling the update() request to update a specific tour in the tours data.
+const updateTour = (req, res) => {
+    const id = req.params.id * 1;
+    if(id >= tours.length){
+        return res.status(404).json({
+            status: "fail",
+            message: 'Invalid ID'
+        });
+    }
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            tour: '<Updated tour here...>'
+        }
+    });
+}
+
+// Function handling the delete() request to delete a specific tour from the tours data.
+const deleteTour = (req, res) => {
+    const id = req.params.id * 1;
+    if(id >= tours.length){
+        return res.status(404).json({
+            status: "fail",
+            message: 'Invalid ID'
+        });
+    }
+
+    res.status(204).json({
+        status: "success",
+        data: null
+    });
+}
+
+
+// ********************************************** API Routes ************************************************** 
+
+// Creating a get request for the tours data so that we can get the data of all the tours.
+// app.get('/api/v1/tours', getAllTours);          (First Approach)
+
+// Creating a get request for the tours data so that we can get the data of a specific tour.
+// Reading the parmaters specified in the url.
+// By specifying :id we are telling that this is a compulsory variable(parameter) and :y? means that this is a optional parameter. ('/api/v1/tours/:id/:x/:y?')
+// app.get('/api/v1/tours/:id', getSpecificTour);  (First Approach)
+
+
+// Creating a post request for the tours so that we can add a new data to the tours.
+// app.post('/api/v1/tours', createTour);          (First Approach)
+
+// Handling the patch request using patch() method to update the data of an existing tour.
+// Not implemented here as in real cases we don't do this with files, we actually do this with the database.
+// app.patch('/api/v1/tours/:id', updateTour);     (First Approach)
+
+// Handling the delete request using delete() method to delete an existing tour.
+// Not implemented here as in real cases we don't do this with files, we actually do this with the database.
+// app.delete('/api/v1/tours/:id', deleteTour);    (First Approach)
+
+
+// (Second and Simple Approach) -> Basically we will not repeat the same routes for different requests.
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+app.route('/api/v1/tours/:id').get(getSpecificTour).patch(updateTour).delete(deleteTour);
+
+
+// Listening to the server
 const port = 3000;
 app.listen(port, () => {
     console.log(`App running on port ${port}...`);
