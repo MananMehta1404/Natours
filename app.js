@@ -10,10 +10,17 @@ const app = express();
 // ************************************************** Middlewares *********************************************
 
 // Including a third-party middleware.
-app.use(morgan('dev'));
+// Using morgan only when we are in development environment.
+// console.log(process.env.NODE_ENV);
+if(process.env.NODE_ENV == 'development'){
+    app.use(morgan('dev'));
+}
 
 // Including a middle-ware to get the client data available in the request object.
 app.use(express.json());
+
+// Built-in Express Middleware to serve static files.
+app.use(express.static(`${__dirname}/public`));
 
 // Creating our own Middleware Function -> The order is very important here as if we create this after the route handlers then it will not be called as the request-responde cycle has already ended. So always try to define it globally on the top of the file.
 app.use((req, res, next) => {
