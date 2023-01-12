@@ -1,15 +1,15 @@
 const express = require('express');
-const tourController = require('./../controllers/tourController');
+const tourController = require('../controllers/tourController');
 
 const router = express.Router();
 
 // Creating a Param Middleware -> Param middleware is a middleware that only runs for certain parameters.
-router.param('id', tourController.checkId);
+// router.param('id', tourController.checkId);
 
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.checkBody, tourController.createTour);  // -> Using more than one middlewares for the same request.
+  .post(tourController.createTour); 
 
 router
   .route('/:id')

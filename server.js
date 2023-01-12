@@ -16,37 +16,19 @@ mongoose.connect(DB, {
     useUnifiedTopology: true
 }).then(() => console.log("DB connection successful!"));
 
-// Creating a Schema for our tours.
-const tourSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, 'A tour must have a name'],
-        unique: true
-    },
-    rating: {
-        type: Number,
-        default: 4.5
-    },
-    price: {
-        type: Number,
-        required: [true, 'A tour must have a price']
-    }
-});
-
-// Creating a model for tourSchema.
-const Tour = mongoose.model('Tour', tourSchema);
 
 // Creating our first document
-const testTour = new Tour({
-    name: 'The Camp Parker',
-    price: 997
-});
+// const testTour = new Tour({
+//     name: 'The Camp Parker',
+//     price: 997
+// });
 
-testTour.save().then(doc => {
-    console.log(doc);
-}).catch(err => {
-    console.log('ERROR: ', err);
-});
+// Saving the tour instance to the database
+// testTour.save().then(doc => {
+//     console.log(doc);
+// }).catch(err => {
+//     console.log('ERROR: ', err);
+// });
 
 // Connecting to a local database
 // mongoose.connect(process.env.DATABASE_LOCAL, {
