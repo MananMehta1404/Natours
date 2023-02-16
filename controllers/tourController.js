@@ -7,8 +7,65 @@ const Tour = require("../models/tourModel");
 exports.getAllTours = async (req, res) => {
 
     try{
-        const tours = await Tour.find();
-    
+
+        console.log(req.query);
+
+        // First we build the query
+
+        // 1A) Filtering
+        // Creating a hard copy of the req.query object
+        const queryObj = {...req.query};
+        // Storing the excluded fields in an array
+        const excludedFields = ['page', 'sort', 'limit', 'fields'];
+        // Deleting the excluded fields from the queryObj
+        excludedFields.forEach(el => delete queryObj[el]);
+
+        // 1B) Advanced Filtering
+
+        // Converting the object into the string
+        let queryStr = JSON.stringify(queryObj);
+        // Replacing the string with the $ before match
+        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}` );
+        // console.log(JSON.parse(queryStr));
+
+        // Standard way of writing a query in MongoDB -> { difficulty: 'easy', duration: { $gte: 5 } }
+        // What we got from the req.query object ->      { difficulty: 'easy', duration: { gte: '5' } }
+
+        let query = Tour.find(JSON.parse(queryStr));
+
+        // Simplest way of writing a query
+        // const query = Tour.find(req.query);
+
+        // Writing a query using Mongoose methods
+        // const query = Tour.find().where('duration').equals(5).where('difficulty').equals('easy');
+
+        // 2) Sorting
+        if(req.query.sort){
+            const sortBy = req.query.sort.split(',').join(' ');
+            // console.log(sortBy);
+            query = query.sort(sortBy);
+            // sort(price ratingsAverage)
+        }
+        else{
+            query = query.sort('-createdAt');
+        }
+
+        // 3) Fields Limiting
+        if(req.query.fields){
+            const fields = req.query.fields.split(',').join(' ');
+            query = query.select(fields);
+            // select(name duration difficulty)
+        }
+        else{
+            query = query.select('-__v');
+        }
+        
+
+        // Second we Execute the query
+        const tours = await query;
+
+
+        // Third we Send the Response
         res.status(200).json({
             status: 'success',
             results: tours.length,
