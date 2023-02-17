@@ -1,3 +1,4 @@
 /node_modules
 /package-lock.json
 /basics.js
+/controllers/tourController_earlier.js
