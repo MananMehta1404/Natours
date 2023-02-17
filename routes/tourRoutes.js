@@ -7,6 +7,10 @@ const router = express.Router();
 // router.param('id', tourController.checkId);
 
 router
+  .route('/top-5-cheap')
+  .get(tourController.aliasTopTours, tourController.getAllTours);
+
+router
   .route('/')
   .get(tourController.getAllTours)
   .post(tourController.createTour); 
@@ -18,6 +22,5 @@ router
   .delete(tourController.deleteTour);
 
 module.exports = router;
-
 
 // Static Files -> The files which are in our file system.

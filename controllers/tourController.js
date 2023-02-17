@@ -3,6 +3,14 @@ const Tour = require("../models/tourModel");
 
 // ******************************************** Handler Functions ********************************************* 
 
+// Function to alias the top 5 tours
+exports.aliasTopTours = (req, res, next) => {
+    req.query.limit = '5';
+    req.query.sort = '-ratingsAverage,price';
+    req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+    next();
+}
+
 // Function handling the get() request of all the tours.
 exports.getAllTours = async (req, res) => {
 
@@ -13,6 +21,7 @@ exports.getAllTours = async (req, res) => {
         // First we build the query
 
         // 1A) Filtering
+
         // Creating a hard copy of the req.query object
         const queryObj = {...req.query};
         // Storing the excluded fields in an array
@@ -40,6 +49,7 @@ exports.getAllTours = async (req, res) => {
         // const query = Tour.find().where('duration').equals(5).where('difficulty').equals('easy');
 
         // 2) Sorting
+
         if(req.query.sort){
             const sortBy = req.query.sort.split(',').join(' ');
             // console.log(sortBy);
@@ -51,6 +61,8 @@ exports.getAllTours = async (req, res) => {
         }
 
         // 3) Fields Limiting
+
+        // Selecting the fields to be returned
         if(req.query.fields){
             const fields = req.query.fields.split(',').join(' ');
             query = query.select(fields);
@@ -60,6 +72,21 @@ exports.getAllTours = async (req, res) => {
             query = query.select('-__v');
         }
         
+        // 4) Pagination
+
+        const page = req.query.page * 1 || 1;  // Converting the string to number and if it is undefined then setting it to 1 (default page)
+        const limit = req.query.limit * 1 || 100;  // Converting the string to number and if it is undefined then setting it to 100 (default limit)
+        const skip = (page - 1) * limit;  // Calculating the number of documents to be skipped
+
+        query = query.skip(skip).limit(limit);  // Skipping the documents and limiting the number of documents to be returned
+
+        // If the page number is greater than the number of pages then throw an error
+        if(req.query.page){
+            const numTours = await Tour.countDocuments();
+            if(skip >= numTours) throw new Error('This page does not exist');
+        }
+
+
 
         // Second we Execute the query
         const tours = await query;
