@@ -1,4 +1,5 @@
 const Tour = require("../models/tourModel");
+const APIFeatures = require("../utils/apiFeatures");
 
 
 // ******************************************** Handler Functions ********************************************* 
@@ -16,83 +17,17 @@ exports.getAllTours = async (req, res) => {
 
     try{
 
-        console.log(req.query);
+        // Building the query
+        const features = new APIFeatures(Tour.find(), req.query)
+            .filter()
+            .sort()
+            .limitFields()
+            .paginate();
 
-        // First we build the query
+        // Executing the query
+        const tours = await features.query;
 
-        // 1A) Filtering
-
-        // Creating a hard copy of the req.query object
-        const queryObj = {...req.query};
-        // Storing the excluded fields in an array
-        const excludedFields = ['page', 'sort', 'limit', 'fields'];
-        // Deleting the excluded fields from the queryObj
-        excludedFields.forEach(el => delete queryObj[el]);
-
-        // 1B) Advanced Filtering
-
-        // Converting the object into the string
-        let queryStr = JSON.stringify(queryObj);
-        // Replacing the string with the $ before match
-        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}` );
-        // console.log(JSON.parse(queryStr));
-
-        // Standard way of writing a query in MongoDB -> { difficulty: 'easy', duration: { $gte: 5 } }
-        // What we got from the req.query object ->      { difficulty: 'easy', duration: { gte: '5' } }
-
-        let query = Tour.find(JSON.parse(queryStr));
-
-        // Simplest way of writing a query
-        // const query = Tour.find(req.query);
-
-        // Writing a query using Mongoose methods
-        // const query = Tour.find().where('duration').equals(5).where('difficulty').equals('easy');
-
-        // 2) Sorting
-
-        if(req.query.sort){
-            const sortBy = req.query.sort.split(',').join(' ');
-            // console.log(sortBy);
-            query = query.sort(sortBy);
-            // sort(price ratingsAverage)
-        }
-        else{
-            query = query.sort('-createdAt');
-        }
-
-        // 3) Fields Limiting
-
-        // Selecting the fields to be returned
-        if(req.query.fields){
-            const fields = req.query.fields.split(',').join(' ');
-            query = query.select(fields);
-            // select(name duration difficulty)
-        }
-        else{
-            query = query.select('-__v');
-        }
-        
-        // 4) Pagination
-
-        const page = req.query.page * 1 || 1;  // Converting the string to number and if it is undefined then setting it to 1 (default page)
-        const limit = req.query.limit * 1 || 100;  // Converting the string to number and if it is undefined then setting it to 100 (default limit)
-        const skip = (page - 1) * limit;  // Calculating the number of documents to be skipped
-
-        query = query.skip(skip).limit(limit);  // Skipping the documents and limiting the number of documents to be returned
-
-        // If the page number is greater than the number of pages then throw an error
-        if(req.query.page){
-            const numTours = await Tour.countDocuments();
-            if(skip >= numTours) throw new Error('This page does not exist');
-        }
-
-
-
-        // Second we Execute the query
-        const tours = await query;
-
-
-        // Third we Send the Response
+        // Send Response
         res.status(200).json({
             status: 'success',
             results: tours.length,
