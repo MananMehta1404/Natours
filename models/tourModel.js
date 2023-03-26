@@ -121,7 +121,7 @@ tourSchema.pre(/^find/, function (next) { // /^find/ means that it will run befo
 
 tourSchema.post(/^find/, function (docs, next) {
     console.log(`Query took ${Date.now() - this.start} milliseconds!`);
-    console.log(docs);
+    // console.log(docs);
     next();
 });
 
@@ -130,7 +130,7 @@ tourSchema.post(/^find/, function (docs, next) {
 
 tourSchema.pre('aggregate', function (next) {
     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // We are adding a new stage to the beginning of the aggregation pipeline.
-    console.log(this.pipeline()); // this.pipeline() is a method that shows the aggregation pipeline.
+    // console.log(this.pipeline()); // this.pipeline() is a method that shows the aggregation pipeline.
     next();
 });
 
