@@ -2,4 +2,8 @@
 /package-lock.json
 /basics.js
 /controllers/tourController_earlier.js
+<<<<<<< HEAD
 /config.env
+=======
+/config.env
+>>>>>>> 727db1dbfc4d8c0730e3e8971f0cc429259d79af
