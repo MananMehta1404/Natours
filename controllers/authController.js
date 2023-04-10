@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
@@ -6,6 +7,7 @@ const AppError = require('../utils/appError');
 // Function to sign the token.
 const signToken = id => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
+// Function to create and send token to the client.
 exports.signup = catchAsync(async (req, res, next) => {
     const newUser = await User.create({
         name: req.body.name,
@@ -25,6 +27,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     });
 });
 
+// Login Functionality.
 exports.login = catchAsync(async (req, res, next) => {
      const { email, password } = req.body;
 
@@ -57,11 +60,15 @@ exports.protect = catchAsync(async (req, res, next) => {
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1];
     }
-    console.log(token);
+    // console.log(token);
 
     if (!token) {
         return next(new AppError('You are not logged in! Please log in to get access.', 401));
     }
-    
+
+    // 2) Token Verification.
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    // console.log(decoded);
+
     next();
 });
