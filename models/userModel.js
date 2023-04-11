@@ -32,7 +32,8 @@ const userSchema = new mongoose.Schema({
             },
             message: 'Passwords are not the same!'
         }
-    }
+    },
+    passwordChangedAt: Date
 });
 
 // Encrypting the password before saving it to the database.
@@ -52,6 +53,19 @@ userSchema.pre('save', async function(next) {
 // Function to check if the password entered by the user is correct or not.
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+// Function to check if the user changed the password after the token was issued. 
+userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
+    if (this.passwordChangedAt) {
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+
+        // console.log(changedTimestamp, JWTTimestamp);
+        return JWTTimestamp < changedTimestamp;
+    }
+
+    // False means NOT changed.
+    return false;
 };
 
 // Creating a model for userSchema.
