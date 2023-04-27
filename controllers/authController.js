@@ -89,6 +89,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     next();
 });
 
+// Restricting routes to certain users. Ex: Only admin can delete a tour.
 exports.restrictTo = (...roles) => (req, res, next) => {
     // roles is an array ['admin', 'lead-guide']. current role = 'user'
     if (!roles.includes(req.user.role)) {
@@ -97,3 +98,17 @@ exports.restrictTo = (...roles) => (req, res, next) => {
 
     next();
 };
+
+// Forgot Password Functionality.
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+    // 1) Get user based on POSTed email.
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+        return next(new AppError('There is no user with this email address.', 404));
+    }
+
+    
+});
+
+// Reset Password Functionality.
+exports.resetPassword = catchAsync(async (req, res, next) => {});
