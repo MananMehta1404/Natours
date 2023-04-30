@@ -10,4 +10,18 @@ const sendEmail = options => {
             pass: process.env.EMAIL_PASSWORD
         }
     });
-}
+
+    // 2) Define the email options.
+    const mailOptions = {
+        from: 'Manan Mehta <hello@manan.io>',
+        to: options.email,
+        subject: options.subject,
+        text: options.message
+        // html:
+    };
+
+    // 3) Actually send the email.
+    transporter.sendMail(mailOptions);
+};
+
+module.exports = sendEmail;
