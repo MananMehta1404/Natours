@@ -58,6 +58,16 @@ userSchema.pre('save', async function(next) {
     next();
 });
 
+// Setting the passwordChangedAt property to the current time when the user changes the password.
+userSchema.pre('save', function(next) {
+    // If the password was not modified or the document is new, then return.
+    if (!this.isModified('password') || this.isNew) return next();
+
+    // Subtracting 1 second from the passwordChangedAt property to make sure that the token is always created after the password is changed.
+    this.passwordChangedAt = Date.now() - 1000;
+    next();
+});
+
 // Function to check if the password entered by the user is correct or not.
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
