@@ -4,6 +4,14 @@ const AppError = require('../utils/appError');
 
 // ******************************************** Handler Functions ********************************************* 
 
+const filterObj = (obj, ...allowedFields) => {
+    const newObj = {};
+    Object.keys(obj).forEach(el => {
+        if (allowedFields.includes(el)) newObj[el] = obj[el];
+    });
+    return newObj;
+};
+
 // Functions handling the users routes
 exports.getAllUsers = catchAsync(async (req, res) => {
     // Executing the query
@@ -26,12 +34,17 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     }
 
     // 2) Filter out unwanted fields names that are not allowed to be updated.
+    const filteredBody = filterObj(req.body, 'name', 'email');
 
     // 3) Update user document.
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, { new: true, runValidators: true });
 
     // 4) Send response.
     res.status(200).json({
-        status: 'success'
+        status: 'success',
+        data: {
+            user: updatedUser
+        }
     });
 
 });
