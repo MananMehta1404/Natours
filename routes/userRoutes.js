@@ -18,6 +18,9 @@ router.patch('/updateMyPassword', authController.protect, authController.updateP
 // Update user data route
 router.patch('/updateMe', authController.protect, userController.updateMe);
 
+// Delete user route
+router.delete('/deleteMe', authController.protect, userController.deleteMe);
+
 router.route('/')
     .get(userController.getAllUsers)
     .post(userController.createUser);

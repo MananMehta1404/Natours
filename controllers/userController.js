@@ -27,6 +27,7 @@ exports.getAllUsers = catchAsync(async (req, res) => {
     });
 });
 
+// Function to update the data of the current user.
 exports.updateMe = catchAsync(async (req, res, next) => {
     // 1) Create error if user POSTs password data.
     if (req.body.password || req.body.passwordConfirm) {
@@ -46,7 +47,17 @@ exports.updateMe = catchAsync(async (req, res, next) => {
             user: updatedUser
         }
     });
+});
 
+// Function to delete the current user.
+exports.deleteMe = catchAsync(async (req, res, next) => {
+    await User.findByIdAndUpdate(req.user.id, { active: false });
+
+    // 204 means no content.
+    res.status(204).json({
+        status: 'success',
+        data: null
+    });
 });
 
 exports.getOneUser = (req, res) => {

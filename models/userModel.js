@@ -41,7 +41,13 @@ const userSchema = new mongoose.Schema({
     },
     passwordChangedAt: Date,
     passwordResetToken: String,
-    passwordResetExpires: Date
+    passwordResetExpires: Date,
+    active: {
+        // This is for deactivating the user account.
+        type: Boolean,
+        default: true,
+        select: false
+    }
 });
 
 // Encrypting the password before saving it to the database.
@@ -65,6 +71,13 @@ userSchema.pre('save', function(next) {
 
     // Subtracting 1 second from the passwordChangedAt property to make sure that the token is always created after the password is changed.
     this.passwordChangedAt = Date.now() - 1000;
+    next();
+});
+
+// Query middleware to filter out the inactive users.
+userSchema.pre(/^find/, function(next) {
+    // this points to the current query.
+    this.find({ active: { $ne: false } });
     next();
 });
 
