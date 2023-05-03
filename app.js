@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -12,6 +13,9 @@ const app = express();
 
 
 // ********************************************** Global Middlewares *********************************************
+
+// Setting security HTTP headers.
+app.use(helmet());
 
 // Including a third-party middleware.
 // Using morgan only when we are in development environment.
@@ -29,7 +33,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // Including a middle-ware to get the client data available in the request object.
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 
 // Built-in Express Middleware to serve static files.
 app.use(express.static(`${__dirname}/public`));
