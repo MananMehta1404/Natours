@@ -122,7 +122,7 @@ tourSchema.virtual('durationWeeks').get(function () {
 });
 
 
-// Document Middleware: runs before .save() and .create() but not on .insertMany().
+// DOCUMENT MIDDLEWARE: runs before .save() and .create() but not on .insertMany().
 
 //pre() middleware runs before the actual event.
 tourSchema.pre('save', function (next) {
@@ -151,12 +151,22 @@ tourSchema.pre('save', function (next) {
 // });
 
 
-// Query Middleware: runs before all the query starts.
+// QUERY MIDDLEWARE: runs before all the query starts.
 
 // tourSchema.pre('find', function (next) {
 tourSchema.pre(/^find/, function (next) { // /^find/ means that it will run before all the query that starts with find.
     this.find({ secretTour: { $ne: true } }); // this refers to the current query.
     this.start = Date.now();  // this.start is a custom property.
+    next();
+});
+
+// Populating Tour Guides - Referencing
+tourSchema.pre(/^find/, function (next) {
+    // populating the guides field with the data from the User model.
+    this.populate({
+        path: 'guides',
+        select: '-__v -passwordChangedAt'
+    });
     next();
 });
 
@@ -167,7 +177,7 @@ tourSchema.post(/^find/, function (docs, next) {
 });
 
 
-// Aggregation Middleware: runs before all the aggregation starts.
+// AGGREGATION MIDDLEWARE: runs before all the aggregation starts.
 
 tourSchema.pre('aggregate', function (next) {
     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // We are adding a new stage to the beginning of the aggregation pipeline.
