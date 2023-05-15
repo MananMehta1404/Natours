@@ -77,7 +77,32 @@ const tourSchema = new mongoose.Schema({
     secretTour: {
         type: Boolean,
         default: false
-    }
+    },
+    startLocation: { 
+        // GeoJSON
+        type: {
+            type: String,
+            default: 'Point',
+            enum: ['Point']
+        },
+        coordinates: [Number], // [longitude, latitude]
+        address: String,
+        description: String
+    },
+    locations: [
+        {
+            // GeoJSON
+            type: {
+                type: String,
+                default: 'Point',
+                enum: ['Point']
+            },
+            coordinates: [Number], // [longitude, latitude]
+            address: String,
+            description: String,
+            day: Number
+        }
+    ]
 }, {
     toJSON: { virtuals: true }, // toJSON: { virtuals: true } means that we want to show the virtual properties in the output.
     toObject: { virtuals: true } // toObject: { virtuals: true } means that we want to show the virtual properties in the output.
