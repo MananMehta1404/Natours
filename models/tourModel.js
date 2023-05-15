@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const User = require('./userModel');
+// const User = require('./userModel');
 // const validator = require('validator');
 
 // Creating a Schema for our tours.
@@ -104,7 +104,13 @@ const tourSchema = new mongoose.Schema({
             day: Number
         }
     ],
-    guides: Array // Embedding
+    // guides: Array // Embedding
+    guides: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User'
+        }
+    ]
 }, {
     toJSON: { virtuals: true }, // toJSON: { virtuals: true } means that we want to show the virtual properties in the output.
     toObject: { virtuals: true } // toObject: { virtuals: true } means that we want to show the virtual properties in the output.
@@ -124,12 +130,12 @@ tourSchema.pre('save', function (next) {
     next();
 });
 
-// Embedding
-tourSchema.pre('save', async function (next) {
-    const guidesPromises = this.guides.map(async id => await User.findById(id)); // We are creating an array of promises.
-    this.guides = await Promise.all(guidesPromises); // We are waiting for all the promises to be resolved.
-    next();
-});
+// Modelling Tour Guides - Embedding
+// tourSchema.pre('save', async function (next) {
+//     const guidesPromises = this.guides.map(async id => await User.findById(id)); // We are creating an array of promises.
+//     this.guides = await Promise.all(guidesPromises); // We are waiting for all the promises to be resolved.
+//     next();
+// });
 
 
 // We can also have multiple pre() middleware functions.
