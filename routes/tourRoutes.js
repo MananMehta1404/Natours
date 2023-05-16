@@ -1,17 +1,26 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
-const reviewController = require('../controllers/reviewController');
+const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
 
 // Creating a Param Middleware -> Param middleware is a middleware that only runs for certain parameters.
 // router.param('id', tourController.checkId);
 
+
+// POST /tour/234fad4/reviews
+// GET /tour/234fad4/reviews
+
+// Nested Routes with Express
+router.use('/:tourId/reviews', reviewRouter);
+
+// Aliasing
 router
   .route('/top-5-cheap')
   .get(tourController.aliasTopTours, tourController.getAllTours);
 
+// Aggregation Pipeline
 router
   .route('/tour-stats')
   .get(tourController.getTourStats);
@@ -31,14 +40,6 @@ router
   .patch(tourController.updateTour)
   .delete(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.deleteTour);
 
-
-// POST /tour/234fad4/reviews
-// GET /tour/234fad4/reviews
-// GET /tour/234fad4/reviews/98fj9fj
-
-router
-  .route('/:tourId/reviews')
-  .post(authController.protect, authController.restrictTo('user'), reviewController.createReview);
 
 module.exports = router;
 
