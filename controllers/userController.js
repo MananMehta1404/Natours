@@ -75,12 +75,9 @@ exports.createUser = (req, res) => {
     });
 };
 
-exports.updateUser = (req, res) => {
-    res.status(500).json({
-        status: 'error',
-        message: 'This route is not yet defined!'
-    });
-};
+// Function to update a user only by an administrator.
+// Do NOT update passwords with this!
+exports.updateUser = factory.updateOne(User);
 
 // Function to delete a user only by an administrator.
 exports.deleteUser = factory.deleteOne(User);

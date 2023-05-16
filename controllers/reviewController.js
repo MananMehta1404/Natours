@@ -38,5 +38,8 @@ exports.createReview = catchAsync(async (req, res, next) => {
     });
 });
 
+// Function handling the update() request to update a specific tour in the tours data.
+exports.updateReview = factory.updateOne(Review);
+
 // Function handling the delete() request to delete a specific review from the reviews collection.
 exports.deleteReview = factory.deleteOne(Review);
