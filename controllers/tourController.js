@@ -57,17 +57,7 @@ exports.getOneTour = catchAsync(async (req, res, next) => {
 });
 
 // Function handling the post() request to create a new tour in the tours collection.
-exports.createTour = catchAsync(async (req, res, next) => {
-
-    const newTour = await Tour.create(req.body);
-
-    res.status(201).json({
-        status: "success",
-        data: {
-            tour: newTour
-        }
-    });
-});
+exports.createTour = factory.createOne(Tour);
 
 
 // Function handling the update() request to update a specific tour in the tours data.

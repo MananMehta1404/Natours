@@ -21,22 +21,16 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
     });
 });
 
-// Function handling the post() request to create a new review in the reviews collection.
-exports.createReview = catchAsync(async (req, res, next) => {
-
+// Middleware to set the tour and user ids before creating a new review.
+exports.setTourUserIds = (req, res, next) => {
     // Allow nested routes
     if(!req.body.tour) req.body.tour = req.params.tourId;
     if(!req.body.user) req.body.user = req.user.id;
+    next();
+};
 
-    const newReview = await Review.create(req.body);
-
-    res.status(201).json({
-        status: 'success',
-        data: {
-            review: newReview
-        }
-    });
-});
+// Function handling the post() request to create a new review in the reviews collection.
+exports.createReview = factory.createOne(Review);
 
 // Function handling the update() request to update a specific tour in the tours data.
 exports.updateReview = factory.updateOne(Review);
