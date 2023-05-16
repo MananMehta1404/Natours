@@ -121,6 +121,13 @@ tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7;
 });
 
+// Virtual Populate
+tourSchema.virtual('reviews', {
+    ref: 'Review',  // The model we want to reference.
+    foreignField: 'tour',  // The field in the Review model where the reference to the current model is stored.
+    localField: '_id'  // The field in the current model where the reference to the Review model is stored.
+});
+
 
 // DOCUMENT MIDDLEWARE: runs before .save() and .create() but not on .insertMany().
 

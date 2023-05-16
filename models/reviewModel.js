@@ -30,11 +30,10 @@ const reviewSchema = new mongoose.Schema({
 });
 
 // ******************************************** Query Middleware *********************************************
+
+// This query middleware is used to populate the tour and user fields in the review document.
 reviewSchema.pre(/^find/, function(next) {
     this.populate({
-        path: 'tour',
-        select: 'name'
-    }).populate({
         path: 'user',
         select: 'name photo'
     });

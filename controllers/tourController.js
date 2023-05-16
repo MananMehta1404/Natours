@@ -40,7 +40,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 // Function handling the get() request to get a specific tour from all the tours.
 exports.getOneTour = catchAsync(async (req, res, next) => {
 
-    const tour = await Tour.findById(req.params.id);
+    const tour = await Tour.findById(req.params.id).populate('reviews');
     // Tour.findById(req.params.id) == Tour.findOne({ _id: req.params.id }) (In MongoDB)
 
     if(!tour){
