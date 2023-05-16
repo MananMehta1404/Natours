@@ -6,7 +6,10 @@ const catchAsync = require("../utils/catchAsync");
 // Function handling the get() request of all the reviews.
 exports.getAllReviews = catchAsync(async (req, res, next) => {
 
-    const reviews = await Review.find();
+    let filter = {};
+    if(req.params.tourId) filter = { tour: req.params.tourId };
+
+    const reviews = await Review.find(filter);
 
     res.status(200).json({
         status: 'success',
@@ -19,7 +22,7 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
 
 // Function handling the post() request to create a new review in the reviews collection.
 exports.createReview = catchAsync(async (req, res, next) => {
-    
+
     // Allow nested routes
     if(!req.body.tour) req.body.tour = req.params.tourId;
     if(!req.body.user) req.body.user = req.user.id;
