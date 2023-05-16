@@ -1,5 +1,6 @@
 const Review = require("../models/reviewModel");
 const catchAsync = require("../utils/catchAsync");
+const factory = require("./handlerFactory");
 
 // ******************************************** Handler Functions *********************************************
 
@@ -36,3 +37,6 @@ exports.createReview = catchAsync(async (req, res, next) => {
         }
     });
 });
+
+// Function handling the delete() request to delete a specific review from the reviews collection.
+exports.deleteReview = factory.deleteOne(Review);
