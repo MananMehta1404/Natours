@@ -29,6 +29,9 @@ exports.setTourUserIds = (req, res, next) => {
     next();
 };
 
+// Function handling the get() request to get a specific review from all the reviews.
+exports.getReview = factory.getOne(Review);
+
 // Function handling the post() request to create a new review in the reviews collection.
 exports.createReview = factory.createOne(Review);
 

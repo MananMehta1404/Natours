@@ -1,7 +1,7 @@
 const Tour = require("../models/tourModel");
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
+// const AppError = require("../utils/appError");
 const factory = require("./handlerFactory");
 
 
@@ -39,22 +39,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 });
 
 // Function handling the get() request to get a specific tour from all the tours.
-exports.getOneTour = catchAsync(async (req, res, next) => {
-
-    const tour = await Tour.findById(req.params.id).populate('reviews');
-    // Tour.findById(req.params.id) == Tour.findOne({ _id: req.params.id }) (In MongoDB)
-
-    if(!tour){
-        return next(new AppError('No tour found with that ID', 404));
-    }
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-            tour
-        }
-    });
-});
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 
 // Function handling the post() request to create a new tour in the tours collection.
 exports.createTour = factory.createOne(Tour);
