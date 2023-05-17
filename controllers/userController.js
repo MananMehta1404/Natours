@@ -13,7 +13,13 @@ const filterObj = (obj, ...allowedFields) => {
     return newObj;
 };
 
-// Functions handling the users routes
+// Functions handling the users routes.
+
+// Function to get the current user.
+exports.getMe = (req, res, next) => {
+    req.params.id = req.user.id;
+    next();
+};
 
 // Function to update the data of the current user.
 exports.updateMe = catchAsync(async (req, res, next) => {
