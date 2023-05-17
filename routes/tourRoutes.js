@@ -5,42 +5,34 @@ const reviewRouter = require('./reviewRoutes');
 
 const router = express.Router();
 
-// Creating a Param Middleware -> Param middleware is a middleware that only runs for certain parameters.
-// router.param('id', tourController.checkId);
-
-
-// POST /tour/234fad4/reviews
-// GET /tour/234fad4/reviews
-
 // Nested Routes with Express
-router.use('/:tourId/reviews', reviewRouter);
+router.use('/:tourId/reviews', reviewRouter);  // This is called mounting the router.
 
 // Aliasing
 router
   .route('/top-5-cheap')
-  .get(tourController.aliasTopTours, tourController.getAllTours);
+  .get(tourController.aliasTopTours, tourController.getAllTours);  // Route for top 5 cheap tours 
 
 // Aggregation Pipeline
 router
   .route('/tour-stats')
-  .get(tourController.getTourStats);
+  .get(tourController.getTourStats);  // Route for tour stats
 
 router
   .route('/monthly-plan/:year')
-  .get(tourController.getMonthlyPlan);
+  .get(authController.protect, authController.restrictTo('admin', 'lead-guide', 'guide'), tourController.getMonthlyPlan);  // Route for monthly plan
+
 
 router
   .route('/')
-  .get(authController.protect, tourController.getAllTours)
-  .post(tourController.createTour); 
+  .get(tourController.getAllTours)  // Get all tours route
+  .post(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.createTour);  // Create tour route
 
 router
   .route('/:id')
-  .get(tourController.getTour)
-  .patch(tourController.updateTour)
-  .delete(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.deleteTour);
+  .get(tourController.getTour)   // Get tour route
+  .patch(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.updateTour)  // Update tour route
+  .delete(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.deleteTour);  // Delete tour route
 
-
+// Exporting the router
 module.exports = router;
-
-// Static Files -> The files which are in our file system.
