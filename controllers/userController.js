@@ -14,19 +14,6 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 // Functions handling the users routes
-exports.getAllUsers = catchAsync(async (req, res) => {
-    // Executing the query
-    const users = await User.find();
-
-    // Send Response
-    res.status(200).json({
-        status: 'success',
-        results: users.length,
-        data: {
-            users
-        }
-    });
-});
 
 // Function to update the data of the current user.
 exports.updateMe = catchAsync(async (req, res, next) => {
@@ -34,13 +21,13 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     if (req.body.password || req.body.passwordConfirm) {
         return next(new AppError('This route is not for password updates. Please use /updateMyPassword.', 400));
     }
-
+    
     // 2) Filter out unwanted fields names that are not allowed to be updated.
     const filteredBody = filterObj(req.body, 'name', 'email');
-
+    
     // 3) Update user document.
     const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, { new: true, runValidators: true });
-
+    
     // 4) Send response.
     res.status(200).json({
         status: 'success',
@@ -53,7 +40,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 // Function to delete the current user.
 exports.deleteMe = catchAsync(async (req, res, next) => {
     await User.findByIdAndUpdate(req.user.id, { active: false });
-
+    
     // 204 means no content.
     res.status(204).json({
         status: 'success',
@@ -61,14 +48,18 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.getUser = factory.getOne(User);
-
 exports.createUser = (req, res) => {
     res.status(500).json({
         status: 'error',
         message: 'This route is not defined! Please use /signup instead.'
     });
 };
+
+// Function to get all users only by an administrator.
+exports.getAllUsers = factory.getAll(User);
+
+// Function to get a user only by an administrator.
+exports.getUser = factory.getOne(User);
 
 // Function to update a user only by an administrator.
 // Do NOT update passwords with this!
