@@ -30,6 +30,10 @@ const reviewSchema = new mongoose.Schema({
     toObject: { virtuals: true }
 });
 
+// ******************************************** Indexes *********************************************
+
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });  // This is used to make sure that a user can only write one review for a tour.
+
 // ******************************************** Query Middleware *********************************************
 
 // This query middleware is used to populate the tour and user fields in the review document.
