@@ -60,13 +60,21 @@ reviewSchema.statics.calcAverageRatings = async function(tourId) {
         }
     ]);
 
-    console.log(stats);
+    // console.log(stats);
 
     // Update the tour document with the new average rating.
-    await Tour.findByIdAndUpdate(tourId, {
-        ratingsQuantity: stats[0].nRating,
-        ratingsAverage: stats[0].avgRating
-    });
+    if(stats.length > 0) {
+        await Tour.findByIdAndUpdate(tourId, {
+            ratingsQuantity: stats[0].nRating,
+            ratingsAverage: stats[0].avgRating
+        });
+    } 
+    else {
+        await Tour.findByIdAndUpdate(tourId, {
+            ratingsQuantity: 0,
+            ratingsAverage: 4.5
+        });
+    }
 }
 
 // ******************************************** Document Middleware *********************************************
@@ -75,6 +83,21 @@ reviewSchema.statics.calcAverageRatings = async function(tourId) {
 reviewSchema.post('save', function() {
     // 'this' points to the current review document.
     this.constructor.calcAverageRatings(this.tour);
+});
+
+// ******************************************** Query Middleware *********************************************
+
+reviewSchema.pre(/^findOneAnd/, async function(next) {
+    // 'this' points to the current query.
+    this.r = await this.findOne();  // We need to save the current review document in the query to use it in the post middleware.  
+    // console.log(this.r);
+    next();
+});
+
+// This query middleware is used to calculate the average rating of a tour after a review is updated or deleted.
+reviewSchema.post(/^findOneAnd/, async function() {
+    // await this.findOne();  // This will not work here, because the query has already executed.
+    await this.r.constructor.calcAverageRatings(this.r.tour);
 });
 
 // Creating a model from the reviewSchema.
