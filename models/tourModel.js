@@ -116,6 +116,10 @@ const tourSchema = new mongoose.Schema({
     toObject: { virtuals: true } // toObject: { virtuals: true } means that we want to show the virtual properties in the output.
 }); 
 
+// Indexing
+tourSchema.index({ price: 1, ratingsAverage: -1 }); // 1 means ascending order and -1 means descending order.
+tourSchema.index({ slug: 1 });
+
 // Creating a virtual property for tourSchema.
 tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7;
