@@ -22,6 +22,9 @@ router
   .route('/monthly-plan/:year')
   .get(authController.protect, authController.restrictTo('admin', 'lead-guide', 'guide'), tourController.getMonthlyPlan);  // Route for monthly plan
 
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(tourController.getToursWithin);  // Route for tours within a certain range of distance
 
 router
   .route('/')
