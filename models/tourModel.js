@@ -193,11 +193,12 @@ tourSchema.post(/^find/, function (docs, next) {
 
 // AGGREGATION MIDDLEWARE: runs before all the aggregation starts.
 
-tourSchema.pre('aggregate', function (next) {
-    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // We are adding a new stage to the beginning of the aggregation pipeline.
-    // console.log(this.pipeline()); // this.pipeline() is a method that shows the aggregation pipeline.
-    next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // We are adding a new stage to the beginning of the aggregation pipeline.
+
+//     console.log(this.pipeline()); // this.pipeline() is a method that shows the aggregation pipeline.
+//     next();
+// });
 
 
 // Creating a model for tourSchema.

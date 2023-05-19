@@ -140,4 +140,41 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getDistances = catchAsync(async (req, res, next) => {
+    const { latlng, unit } = req.params;  // latlng: 34.111745,-118.113491, unit: mi
+    const [lat, lng] = latlng.split(',');  // lat: 34.111745, lng: -118.113491
+
+    const multiplier = unit === 'mi' ? 0.000621371 : 0.001;  // multiplier: 0.000621371
+
+    if(!lat || !lng) {
+        next(new AppError('Please provide latitude and longitude in the format lat,lng.', 400));
+    }
+
+    const distances = await Tour.aggregate([
+        {
+            $geoNear: {
+                near: {
+                    type: 'Point',
+                    coordinates: [lng * 1, lat * 1]  // lng * 1 and lat * 1 are used to convert the string values to numbers.
+                },
+                distanceField: 'distance',  // distanceField: 'distance' means that we want to add a new field called distance to the document.
+                distanceMultiplier: multiplier  // distanceMultiplier: multiplier means that we want to multiply the distance value by the multiplier.
+            }
+        },
+        {
+            $project: {
+                distance: 1,  // distance: 1 means that we want to include the distance field in the result.
+                name: 1  // name: 1 means that we want to include the name field in the result.
+            }
+        }
+    ]);
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            data: distances
+        }
+    });
+});
+
 // Here all the handler functions are in the exports object.

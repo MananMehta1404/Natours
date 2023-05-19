@@ -27,6 +27,10 @@ router
   .get(tourController.getToursWithin);  // Route for tours within a certain range of distance
 
 router
+  .route('/distances/:latlng/unit/:unit')
+  .get(tourController.getDistances);  // Route for calculating distances from a certain point.
+
+router
   .route('/')
   .get(tourController.getAllTours)  // Get all tours route
   .post(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.createTour);  // Create tour route
