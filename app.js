@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -15,8 +16,18 @@ const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 
+// ********************************************** Pug Template Engine *********************************************
+
+// Setting the Pug Template Engine.
+app.set('view engine', 'pug');
+// Setting the views directory.
+app.set('views', path.join(__dirname, 'views'));
+
 
 // ********************************************** Global Middlewares *********************************************
+
+// Built-in Express Middleware to serve static files.
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Setting security HTTP headers.
 app.use(helmet());
@@ -57,8 +68,6 @@ app.use(hpp({
     ]
 }));
 
-// Built-in Express Middleware to serve static files.
-app.use(express.static(`${__dirname}/public`));
 
 // Creating our own Middleware Function -> The order is very important here as if we create this after the route handlers then it will not be called as the request-responde cycle has already ended. So always try to define it globally on the top of the file.
 // app.use((req, res, next) => {
@@ -75,6 +84,11 @@ app.use((req, res, next) => {
 
 
 // ********************************************** API Routes ************************************************** 
+
+app.get('/', (req, res) => {
+    res.status(200).render('base');
+});
+
 // Mounting the Routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
