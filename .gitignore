@@ -2,6 +2,7 @@
 /package-lock.json
 /basics.js
 /controllers/tourController_earlier.js
+/.cache
 <<<<<<< HEAD
 /config.env
 =======
